@@ -57,10 +57,16 @@ class Alfred:
                 error('Error: You Must Agree to the terms to use Alfred!', fatal=True)
 
     # Reset for another attack
-    def reset(self):
+    def reset(self, full=False):
         self.c = 0
         self.current_threads.clear()
         self.hacked_count = 0
+        if full:
+            self.combos, self.combolist_path = [], ""
+            self.proxy_file, self.proxy_list = None, []
+            self.single_user = None
+        if self.verbose and full:
+            print("Reset All Variables!")
 
     # Print with threading.Lock
     def lprint(self, msg, color=None):
@@ -83,9 +89,18 @@ class Alfred:
             self.set_passwords_default()
             return
         else:
-            with open(self.combolist_path, "rt") as c:
-                data = c.readlines()
-                c.close()
+            try:
+                with open(self.combolist_path, "rt") as c:
+                    data = c.readlines()
+                    c.close()
+            except FileNotFoundError:
+                try:
+                    with open(str(__file__).replace("alfred.py", self.combolist_path), "rt") as c:
+                        data = c.readlines()
+                        c.close()
+                except FileNotFoundError:
+                    error("Error: Wordlist Not Found, try placing in the Alfred Directory")
+                    return
         if self.attack_mode == 'single':
             for line in data:
                 if line[0] != "#":
@@ -122,7 +137,8 @@ class Alfred:
     def ready_attack(self):
         if self.verbose:
             print('Readying passwordlist and proxies...')
-        self.ready_passwords()
+        if self.combos == []:
+            self.ready_passwords()
         self.ready_proxies()
         self.ready = True
         if self.verbose:
@@ -227,12 +243,12 @@ class Alfred:
         el = round(time() - start, 2)
         print(f"[STATS] Elapsed: {el} seconds")
         print(f"[STATS] Total Attempts: {self.c}")
-        self.reset()
         if self.hacked_count == 0:
             error("[FAIL] No accounts hacked!")
         else:
             good(f'[HACKED] Hacked a total of {self.hacked_count} account(s)!')
-
+        self.reset()
+        
     # Start the attack with whatever function
     def go(self):
         self.run = True
