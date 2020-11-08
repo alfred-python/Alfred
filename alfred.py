@@ -110,7 +110,8 @@ class Alfred:
             for line in data:
                 if line[0] != "#":
                     spl = line.strip().split(self.divider)
-                    self.combos.append([spl[0], spl[1].strip()])
+                    if len(spl) == 2:
+                        self.combos.append([spl[0], spl[1].strip()])
         else:
             error(f'[ATTACK MODE] Error, attack mode \'{self.attack_mode}\' not recognised')
 
@@ -248,7 +249,7 @@ class Alfred:
         else:
             good(f'[HACKED] Hacked a total of {self.hacked_count} account(s)!')
         self.reset()
-        
+
     # Start the attack with whatever function
     def go(self):
         self.run = True
