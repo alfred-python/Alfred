@@ -92,6 +92,7 @@ def show_help():
     print('ready        Get alfred ready for an attack, ready proxies and passwords')
     print('attack       Start the attack and get alfred ready if necessary')
     print('clear        Clear the terminal screen')
+    print('reset        Reset variables to default')
     print("banner       Show the epic Alfred banner")
 
 # Show the current setting for Alfred
@@ -105,7 +106,7 @@ def show_options(alfred):
     print(f"Prompt  (Prompt before more tasks)                   ", end=""); show_bool(alfred.prompt)
     print(f'Mode (attack mode; single/combo)                     {alfred.attack_mode}')
     print(f"ProxyList (proxylist file path)                      ", end=""); show_bool(alfred.proxy_file)
-    print(f'ComboList (wordlist file path)                       ', end=""); show_bool(alfred.combolist_path)
+    print(f'ComboList (wordlist file path, NO SPACES)            ', end=""); show_bool(alfred.combolist_path)
     print(f'User (username for single attack)                    {alfred.single_user}')
     if alfred.combos != []:
         print(f"Number Of Combos(length of  combos)                  {len(alfred.combos)}")
@@ -245,6 +246,9 @@ def evaluate_answer(answer, alfred):
 
     elif answer in ['clear', 'cls']:
         clear_screen()
+
+    elif answer in ['reset', 'fullreset']:
+        alfred.reset(full=True)
     # Default to an error message on an invalid command
     else:
         error('Error: Command Not Recognised!')
