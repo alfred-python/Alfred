@@ -1,11 +1,18 @@
 # Alfred
-Pure Python Alfred Instagram Bruteforce Tool
+Pure Python3 Alfred Instagram Bruteforce Tool
 
-Alfred is a python made proof of concept showing that Instagram accounts can still be bruteforced in 2020. Alfred is largely object orientated with requests being the core library.
+Alfred is a python3 made proof of concept showing that Instagram accounts can still be bruteforced in 2020. Alfred is largely object orientated with requests being the core library.
 I would appreciate sort of feedback on the project, please feel free email me at alfred-python@protonmail.com
 
 ### WARNING ###
 - Alfred is not to be used for any illegal purposes, as stated above it is a proof of concept and may be used in ethical hacking operations if desired.
+
+# Usage
+Alfred doesnt need to install and has been tested on windows and linux
+To use Alfred simply
+> git clone https://github.com/alfred-python/Alfred/
+> cd Alfred
+> python3 main.py
 
 # Features
 Currently Alfred operates in two modes; single and combo
