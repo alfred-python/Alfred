@@ -10,9 +10,9 @@ I would appreciate sort of feedback on the project, please feel free email me at
 ## Usage
 Alfred doesnt need to install and has been tested on windows and linux
 To use Alfred simply open your terminal and run
-  git clone https://github.com/alfred-python/Alfred/
-  cd Alfred
-  python3 main.py (this will requirements and run alfred)
+`git clone https://github.com/alfred-python/Alfred/`
+`cd Alfred`
+`python3 main.py (this will requirements and run alfred)`
 
 ## Features
 Currently Alfred operates in two modes; single and combo
@@ -21,7 +21,7 @@ Currently Alfred operates in two modes; single and combo
 
 ## Notes
 Alfred can bruteforce instagram accounts by sending legitimate seeming requests and then checking the response to decide whether it was a successful login.
-While I realise that I could of made Alfred in one file and largely simplified the command line ui, i decided to adopt a similar style to metasploit because I enjoy it and new features can more easily be implemented.
+While I realise that I could of made Alfred in one file and largely simplified the command line ui, i decided to adopt a similar style to metasploit because I enjoy it and new features can more easily be implemented. "alfred.config" can be manually edited if not working as it holds few pieces of info that determines if alfred can run etc.
 
 ### Updates
 Alfred is currently in early stages and in the next update i intend to add
