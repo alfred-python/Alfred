@@ -214,7 +214,7 @@ class Alfred:
         # Wait for threads to die and print info after every 20 seconds
         while active_count() > 1:
             try:
-                if time() > incremental_print_time + 20:
+                if time() > incremental_print_time + 15:
                     print(f'[STATS] Total Attempts: {self.c}     Hacked: {self.hacked_count}      Elapsed: {round(time() - start, 2)}s') 
                     incremental_print_time += 20
                     
@@ -223,15 +223,15 @@ class Alfred:
                     t.run = False
                 error("Keyboard Interrupt; Exiting...", fatal=True)
             
-            print("[DONE] All Passwords have been attempted!")
-            el = round(time() - start, 2)
-            print(f"[STATS] Elapsed: {el} seconds")
-            print(f"[STATS] Total Attempts: {self.c}")
-            self.reset()
-            if self.hacked_count == 0:
-                error("[FAIL] No accounts hacked!")
-            else:
-                good(f'[HACKED] Hacked a total of {self.hacked_count} account(s)!')
+        print("[DONE] All Passwords have been attempted!")
+        el = round(time() - start, 2)
+        print(f"[STATS] Elapsed: {el} seconds")
+        print(f"[STATS] Total Attempts: {self.c}")
+        self.reset()
+        if self.hacked_count == 0:
+            error("[FAIL] No accounts hacked!")
+        else:
+            good(f'[HACKED] Hacked a total of {self.hacked_count} account(s)!')
 
     # Start the attack with whatever function
     def go(self):
