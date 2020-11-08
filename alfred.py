@@ -42,11 +42,11 @@ class Alfred:
         # Run functions, check user ageement
         init()  # init colorama, for coloured text
         if not self.config_data['agree']:
-            error("""                   !Notice!
-        - Alfred must not be used for any unathaurized hacking of instagram accounts
-        - By using alfred innapropriately you are liable to laws in your specific area, and instagram policies/user agreements/ts & cs
-        - I am not to be held liable nor responsible for innapropriate use of Alfred
-        - To use alfred you must agree to the above terms, which are subject to change""")
+            error("""          !Notice!
+- Alfred must not be used for any unathaurized hacking of instagram accounts
+- By using alfred innapropriately you are liable to laws in your specific area, and instagram policies/user agreements/terms and conditions
+- I am not to be held liable nor responsible for innapropriate use of Alfred
+- To use alfred you must agree to the above terms, which are subject to change""")
 
             if input('Do you agree to the above terms? (y/n)').lower() in ['yes', 'y', 'ye', 'agress']:
                 write_config('agree', True)
