@@ -12,7 +12,7 @@ Alfred doesnt need to install and has been tested on windows and linux
 To use Alfred simply open your terminal and run a few commands:
 - `git clone https://github.com/alfred-python/Alfred/`
 - `cd Alfred`
-- `python3 main.py (this will requirements and run alfred)`
+- `python3 main.py (this will install requirements and run alfred)`
 
 ## Features
 Currently Alfred operates in two modes; single and combo
