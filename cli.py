@@ -6,6 +6,7 @@ import time
 import os
 
 github_link = "https://github.com/alfred-python/Alfred"
+youtube_link = "https://youtube.com/channel/UC2lNV87coLMar73mVK8uKGg"
 
 # Print the alfed banner/logo
 def show_banner(show_face=True):
@@ -71,8 +72,9 @@ def show_banner(show_face=True):
                         | . || || | '_ _  ___  _| |
                         |   || || |-| '_>/ ._>/ . |
                         |_|_||_||_| |_|  \___.\___|.py
-                        --> Python Instagram Account Bruteforcer
-                        --> github: {github_link}
+                    --> Python Instagram Account Bruteforcer
+                    --> Github: {github_link}
+                    --> Youtube: {youtube_link}
     """)
 
 # Return input from the user and exit on a keybaord interrupt
