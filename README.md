@@ -6,8 +6,8 @@ Alfred is a python3 made proof of concept showing that Instagram accounts can st
 **WARNING**
 - Alfred is not to be used for any illegal purposes, as stated above it is a proof of concept and may be used in ethical hacking operations.
 
-## Usage
-To use Alfred simply open your terminal and run a few commands:
+## Installation
+To install Alfred simply open your terminal and run a few commands:
 - `git clone https://github.com/alfred-python/Alfred/`
 - `cd Alfred`
 - `python3 main.py`
@@ -16,6 +16,12 @@ To use Alfred simply open your terminal and run a few commands:
 Currently Alfred operates in two modes; single and combo
 - Combo: Using a wordlist different account names and passwords 
 - Single: Attacking account by only using a single username
+
+## Usage
+### Single Mode
+`set user <usernmae>` Set username to attack
+`set combolist <combolist>` Set the Combolist
+`run` This get alfred ready and download proxies then run the attack
 
 ## Notes
 "alfred.config" can be manually edited if not working as it holds few pieces of data that determines if alfred can run etc.
