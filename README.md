@@ -19,9 +19,9 @@ Currently Alfred operates in two modes; single and combo
 
 ## Usage
 ### Single Mode
-`set user <usernmae>` Set username to attack
-`set combolist <combolist>` Set the Combolist
-`run` This get alfred ready and download proxies then run the attack
+-`set user <usernmae>` Set username to attack
+-`set combolist <combolist>` Set the Combolist
+-`run` This get alfred ready and download proxies then run the attack
 
 ## Notes
 "alfred.config" can be manually edited if not working as it holds few pieces of data that determines if alfred can run etc.
